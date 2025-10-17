@@ -8,21 +8,19 @@ import (
 
 func main() {
 	configData, err := config.Read()
-	fmt.Println("First config data ::::::::::::", configData)
 	if err != nil {
-		fmt.Errorf("error while reading config %v", err)
+		fmt.Println("error while reading config", err)
 	}
 
-	configData.Current_user_name = "Anas"
-	err = configData.SetUser()
+	err = configData.SetUser("Anas")
 	if err != nil {
-		fmt.Errorf("error while setting user to config file %v", err)
+		fmt.Println("error while setting user to config file", err)
 	}
 
 	configData, err = config.Read()
 	if err != nil {
-		fmt.Errorf("error while reading config %v", err)
+		fmt.Println("error while reading config", err)
 	}
-	fmt.Println(configData)
 
+	fmt.Println(configData)
 }
