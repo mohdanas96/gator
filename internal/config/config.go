@@ -2,7 +2,6 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 )
 
@@ -32,7 +31,6 @@ func Read() (Config, error) {
 	configData := Config{}
 	err = json.Unmarshal(byteData, &configData)
 	if err != nil {
-		fmt.Println("error happening here")
 		return Config{}, err
 	}
 
