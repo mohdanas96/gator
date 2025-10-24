@@ -43,6 +43,8 @@ func main() {
 	cmds := commands{commandRegistry: make(map[string]commandHandler)}
 	cmds.register("login", handlerLogin)
 	cmds.register("register", handlerRegister)
+	cmds.register("reset", handlerDeleteUsers)
+	cmds.register("users", handlerGetAllUsers)
 
 	arg := cmdArgs[2:]
 	cmd := command{cmdName, arg}
