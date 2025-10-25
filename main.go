@@ -2,7 +2,7 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -19,40 +19,37 @@ type state struct {
 
 func main() {
 	cmdArgs := os.Args
-	if len(cmdArgs) < 2 {
-		fmt.Println("not enough arguments were provided")
-		os.Exit(1)
+	if len(os.Args) < 2 {
+		log.Fatal("Usage: cli <command> [args...]")
 	}
 
 	configData, err := config.Read()
 	if err != nil {
-		fmt.Println("error while reading config", err)
+		log.Fatal("error while reading config")
 	}
 
 	db, err := sql.Open("postgres", configData.Db_url)
 	if err != nil {
-		fmt.Println("error while connecting to database")
+		log.Fatal("error while connecting to database")
 	}
 
 	dbQueries := database.New(db)
 
 	configStatePtr := &state{c: &configData, db: dbQueries}
 
-	cmdName := strings.TrimSpace(cmdArgs[1])
-
 	cmds := commands{commandRegistry: make(map[string]commandHandler)}
 	cmds.register("login", handlerLogin)
 	cmds.register("register", handlerRegister)
 	cmds.register("reset", handlerDeleteUsers)
 	cmds.register("users", handlerGetAllUsers)
+	cmds.register("agg", aggHandler)
 
 	arg := cmdArgs[2:]
-	cmd := command{cmdName, arg}
+	cmdName := strings.TrimSpace(cmdArgs[1])
 
-	err = cmds.run(configStatePtr, cmd)
+	err = cmds.run(configStatePtr, command{cmdName, arg})
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 
 }
