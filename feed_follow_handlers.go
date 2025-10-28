@@ -21,14 +21,14 @@ func handlerFollow(s *state, cmd command) error {
 		return fmt.Errorf("invalid url parameter")
 	}
 
-	feed, err := s.db.GetFeedWithUrl(context.Background(), feedUrl)
-	if err != nil {
-		return fmt.Errorf("something went wrong while fetching feed :: %v", err)
-	}
-
 	user, err := s.db.GetUser(context.Background(), s.c.Current_user_name)
 	if err != nil {
 		return fmt.Errorf("something went wrong while fetching user :: %v", err)
+	}
+
+	feed, err := s.db.GetFeedWithUrl(context.Background(), feedUrl)
+	if err != nil {
+		return fmt.Errorf("something went wrong while fetching feed :: %v", err)
 	}
 
 	params := database.CreateFeedFollowParams{
@@ -50,7 +50,12 @@ func handlerFollow(s *state, cmd command) error {
 }
 
 func handlerFollowing(s *state, _ command) error {
-	feedFollows, err := s.db.GetFeedFollowsForUser(context.Background(), s.c.Current_user_name)
+	user, err := s.db.GetUser(context.Background(), s.c.Current_user_name)
+	if err != nil {
+		return fmt.Errorf("something went wrong while fetching current user :: %v", err)
+	}
+
+	feedFollows, err := s.db.GetFeedFollowsForUser(context.Background(), user.ID)
 	if err != nil {
 		return fmt.Errorf("something went wrong while retrieving feeds user follows :: %v", err)
 	}
