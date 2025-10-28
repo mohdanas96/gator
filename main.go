@@ -42,7 +42,9 @@ func main() {
 	cmds.register("register", handlerRegister)
 	cmds.register("reset", handlerDeleteUsers)
 	cmds.register("users", handlerGetAllUsers)
-	cmds.register("agg", aggHandler)
+	cmds.register("agg", handlerFetchFeed)
+	cmds.register("addfeed", handlerAddFeed)
+	cmds.register("feeds", handlerGetAllFeed)
 
 	arg := cmdArgs[2:]
 	cmdName := strings.TrimSpace(cmdArgs[1])

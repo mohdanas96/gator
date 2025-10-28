@@ -1,0 +1,92 @@
+package main
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"html"
+	"net/url"
+	"strings"
+	"time"
+
+	"github.com/google/uuid"
+	"github.com/mohdanas96/gator/internal/api"
+	"github.com/mohdanas96/gator/internal/database"
+)
+
+func handlerFetchFeed(s *state, cmd command) error {
+	feed, err := api.FetchFeed(context.Background(), "https://www.wagslane.dev/index.xml")
+	if err != nil {
+		return errors.New("something went wrong")
+	}
+
+	feed.Channel.Title = html.UnescapeString(feed.Channel.Title)
+	feed.Channel.Description = html.UnescapeString(feed.Channel.Description)
+
+	for i := range feed.Channel.Item {
+		feed.Channel.Item[i].Description = html.UnescapeString(feed.Channel.Item[i].Description)
+		feed.Channel.Item[i].Title = html.UnescapeString(feed.Channel.Item[i].Title)
+	}
+
+	fmt.Println(feed)
+
+	return nil
+}
+
+func handlerAddFeed(s *state, cmd command) error {
+	args := cmd.args
+	if len(args) < 2 {
+		return fmt.Errorf("requires both name and url args")
+	}
+
+	feedUrl := args[len(args)-1]
+
+	_, err := url.ParseRequestURI(feedUrl)
+	if err != nil {
+		return fmt.Errorf("invalid url argument")
+	}
+
+	titleName := strings.Join(args[:len(args)-1], " ")
+
+	user, err := s.db.GetUser(context.Background(), s.c.Current_user_name)
+	if err != nil {
+		return fmt.Errorf("something went wrong while retrieving current user :: %v", err)
+	}
+
+	feedParams := database.CreateFeedParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Name:      titleName,
+		Url:       feedUrl,
+		UserID:    user.ID,
+	}
+
+	_, err = s.db.CreateFeed(context.Background(), feedParams)
+	if err != nil {
+		return fmt.Errorf("something went wrong while creating feed :: %v", err)
+	}
+
+	return nil
+}
+
+func handlerGetAllFeed(s *state, _ command) error {
+	feeds, err := s.db.GetFeedsWithUsername(context.Background())
+	if err != nil {
+		return fmt.Errorf("something went wrong while retrieving all feeds :: %v", err)
+	}
+
+	if len(feeds) == 0 {
+		fmt.Println("No feeds found")
+		return nil
+	}
+
+	for i, v := range feeds {
+		fmt.Printf("%v.", i+1)
+		fmt.Println("Name:", v.Name)
+		fmt.Println("  URL:", v.Url)
+		fmt.Println("  Username: ", v.Name_2)
+		fmt.Println("  -------------------")
+	}
+	return nil
+}
