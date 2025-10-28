@@ -45,6 +45,8 @@ func main() {
 	cmds.register("agg", handlerFetchFeed)
 	cmds.register("addfeed", handlerAddFeed)
 	cmds.register("feeds", handlerGetAllFeed)
+	cmds.register("follow", handlerFollow)
+	cmds.register("following", handlerFollowing)
 
 	arg := cmdArgs[2:]
 	cmdName := strings.TrimSpace(cmdArgs[1])

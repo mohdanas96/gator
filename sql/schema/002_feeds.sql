@@ -1,6 +1,6 @@
 -- +goose up
 CREATE TABLE feeds(
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     name VARCHAR(255) NOT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE feeds(
     user_id UUID NOT NULL,
     CONSTRAINT fk_users
     FOREIGN KEY (user_id)
-    REFERENCES users(id)
+    REFERENCES users(id) 
     ON DELETE CASCADE
 );
 

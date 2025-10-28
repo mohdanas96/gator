@@ -71,6 +71,11 @@ func handlerGetAllUsers(s *state, _ command) error {
 		return err
 	}
 
+	if len(users) == 0 {
+		fmt.Println("Currently no users. Register as a user using 'register' command")
+		return nil
+	}
+
 	for _, user := range users {
 		if user.Name == s.c.Current_user_name {
 			fmt.Printf("* %s (current)\n", user.Name)

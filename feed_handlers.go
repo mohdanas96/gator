@@ -62,10 +62,26 @@ func handlerAddFeed(s *state, cmd command) error {
 		UserID:    user.ID,
 	}
 
-	_, err = s.db.CreateFeed(context.Background(), feedParams)
+	feed, err := s.db.CreateFeed(context.Background(), feedParams)
 	if err != nil {
 		return fmt.Errorf("something went wrong while creating feed :: %v", err)
 	}
+
+	feedFollowParams := database.CreateFeedFollowParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		FeedID:    feed.ID,
+		UserID:    user.ID,
+	}
+
+	_, err = s.db.CreateFeedFollow(context.Background(), feedFollowParams)
+	if err != nil {
+		return fmt.Errorf("something went wrong while creating feed follow when adding feed :: %v", err)
+	}
+
+	fmt.Println("Feed is successfully added")
+	fmt.Println("You are now following", feed.Name)
 
 	return nil
 }
