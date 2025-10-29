@@ -43,10 +43,11 @@ func main() {
 	cmds.register("reset", handlerDeleteUsers)
 	cmds.register("users", handlerGetAllUsers)
 	cmds.register("agg", handlerFetchFeed)
-	cmds.register("addfeed", handlerAddFeed)
+	cmds.register("addfeed", middlewareLoggedIn(handlerAddFeed))
 	cmds.register("feeds", handlerGetAllFeed)
-	cmds.register("follow", handlerFollow)
-	cmds.register("following", handlerFollowing)
+	cmds.register("follow", middlewareLoggedIn(handlerFollow))
+	cmds.register("following", middlewareLoggedIn(handlerFollowing))
+	cmds.register("unfollow", middlewareLoggedIn(handlerUnfollowFeed))
 
 	arg := cmdArgs[2:]
 	cmdName := strings.TrimSpace(cmdArgs[1])

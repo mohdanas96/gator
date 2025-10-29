@@ -33,7 +33,7 @@ func handlerFetchFeed(s *state, cmd command) error {
 	return nil
 }
 
-func handlerAddFeed(s *state, cmd command) error {
+func handlerAddFeed(s *state, cmd command, user database.User) error {
 	args := cmd.args
 	if len(args) < 2 {
 		return fmt.Errorf("requires both name and url args")
@@ -47,11 +47,6 @@ func handlerAddFeed(s *state, cmd command) error {
 	}
 
 	titleName := strings.Join(args[:len(args)-1], " ")
-
-	user, err := s.db.GetUser(context.Background(), s.c.Current_user_name)
-	if err != nil {
-		return fmt.Errorf("something went wrong while retrieving current user :: %v", err)
-	}
 
 	feedParams := database.CreateFeedParams{
 		ID:        uuid.New(),

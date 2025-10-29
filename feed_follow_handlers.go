@@ -10,7 +10,7 @@ import (
 	"github.com/mohdanas96/gator/internal/database"
 )
 
-func handlerFollow(s *state, cmd command) error {
+func handlerFollow(s *state, cmd command, user database.User) error {
 	if len(cmd.args) < 1 {
 		return fmt.Errorf("requires url as a parameter")
 	}
@@ -19,11 +19,6 @@ func handlerFollow(s *state, cmd command) error {
 	_, err := url.ParseRequestURI(feedUrl)
 	if err != nil {
 		return fmt.Errorf("invalid url parameter")
-	}
-
-	user, err := s.db.GetUser(context.Background(), s.c.Current_user_name)
-	if err != nil {
-		return fmt.Errorf("something went wrong while fetching user :: %v", err)
 	}
 
 	feed, err := s.db.GetFeedWithUrl(context.Background(), feedUrl)
@@ -49,12 +44,7 @@ func handlerFollow(s *state, cmd command) error {
 	return nil
 }
 
-func handlerFollowing(s *state, _ command) error {
-	user, err := s.db.GetUser(context.Background(), s.c.Current_user_name)
-	if err != nil {
-		return fmt.Errorf("something went wrong while fetching current user :: %v", err)
-	}
-
+func handlerFollowing(s *state, _ command, user database.User) error {
 	feedFollows, err := s.db.GetFeedFollowsForUser(context.Background(), user.ID)
 	if err != nil {
 		return fmt.Errorf("something went wrong while retrieving feeds user follows :: %v", err)
@@ -63,5 +53,27 @@ func handlerFollowing(s *state, _ command) error {
 	for i, v := range feedFollows {
 		fmt.Printf("%v. %v\n", i+1, v.FeedName)
 	}
+	return nil
+}
+
+func handlerUnfollowFeed(s *state, cmd command, user database.User) error {
+	if len(cmd.args) < 1 {
+		return fmt.Errorf("feed url is required")
+	}
+
+	feedUrl := cmd.args[0]
+
+	_, err := url.ParseRequestURI(feedUrl)
+	if err != nil {
+		return fmt.Errorf("Url is invalid")
+	}
+
+	err = s.db.RemoveFeedFollow(context.Background(), database.RemoveFeedFollowParams{Url: feedUrl, UserID: user.ID})
+	if err != nil {
+		return fmt.Errorf("something went wrong while deleting feed following :: %v", err)
+	}
+
+	fmt.Println("Unfollowed", feedUrl)
+
 	return nil
 }
