@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/xml"
 	"errors"
+	"html"
 	"io"
 	"net/http"
 )
@@ -36,6 +37,14 @@ func FetchFeed(context context.Context, feedUrl string) (*RSSFeed, error) {
 	err = xml.Unmarshal(data, &rssFeed)
 	if err != nil {
 		return nil, errors.New("something went wrong while parsing xml")
+	}
+
+	rssFeed.Channel.Title = html.UnescapeString(rssFeed.Channel.Title)
+	rssFeed.Channel.Description = html.UnescapeString(rssFeed.Channel.Description)
+
+	for i := range rssFeed.Channel.Item {
+		rssFeed.Channel.Item[i].Description = html.UnescapeString(rssFeed.Channel.Item[i].Description)
+		rssFeed.Channel.Item[i].Title = html.UnescapeString(rssFeed.Channel.Item[i].Title)
 	}
 
 	return &rssFeed, nil
