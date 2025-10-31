@@ -2,11 +2,15 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/mohdanas96/gator/internal/api"
+	"github.com/mohdanas96/gator/internal/database"
 )
 
 func handlerAgg(s *state, cmd command) error {
@@ -44,10 +48,31 @@ func scrapeFeeds(s *state) error {
 		return fmt.Errorf("something went wrong while fetching rss feed :: %v", err)
 	}
 
-	for _, item := range rssFeed.Channel.Item {
-		fmt.Printf("Found post: %s\n", item.Title)
+	for _, v := range rssFeed.Channel.Item {
+		parsedDate, err := time.Parse("Mon, 02 Jan 2006 15:04:05 -0700", v.PubDate)
+		if err != nil {
+			return fmt.Errorf("something went wrong while parsing date :: %v", err)
+		}
+
+		params := database.CreatePostParams{
+			ID:          uuid.New(),
+			CreatedAt:   time.Now().UTC(),
+			UpdatedAt:   time.Now().UTC(),
+			Title:       v.Title,
+			Url:         v.Link,
+			Description: sql.NullString{String: v.Description, Valid: true},
+			PublishedAt: parsedDate,
+			FeedID:      feed.ID,
+		}
+		_, err = s.db.CreatePost(context.Background(), params)
+		if err != nil {
+			if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
+				continue
+			}
+			log.Printf("Couldn't create post: %v", err)
+			continue
+		}
 	}
-	log.Printf("Feed %s collected, %v posts found", feed.Name, len(rssFeed.Channel.Item))
 
 	return nil
 }

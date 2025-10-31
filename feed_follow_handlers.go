@@ -28,8 +28,8 @@ func handlerFollow(s *state, cmd command, user database.User) error {
 
 	params := database.CreateFeedFollowParams{
 		ID:        uuid.New(),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
 		FeedID:    feed.ID,
 		UserID:    user.ID,
 	}

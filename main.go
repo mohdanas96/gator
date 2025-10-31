@@ -48,6 +48,7 @@ func main() {
 	cmds.register("follow", middlewareLoggedIn(handlerFollow))
 	cmds.register("following", middlewareLoggedIn(handlerFollowing))
 	cmds.register("unfollow", middlewareLoggedIn(handlerUnfollowFeed))
+	cmds.register("browse", middlewareLoggedIn(handlerBrowse))
 
 	arg := cmdArgs[2:]
 	cmdName := strings.TrimSpace(cmdArgs[1])

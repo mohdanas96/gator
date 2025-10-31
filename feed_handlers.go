@@ -28,8 +28,8 @@ func handlerAddFeed(s *state, cmd command, user database.User) error {
 
 	feedParams := database.CreateFeedParams{
 		ID:        uuid.New(),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
 		Name:      titleName,
 		Url:       feedUrl,
 		UserID:    user.ID,
@@ -42,8 +42,8 @@ func handlerAddFeed(s *state, cmd command, user database.User) error {
 
 	feedFollowParams := database.CreateFeedFollowParams{
 		ID:        uuid.New(),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
 		FeedID:    feed.ID,
 		UserID:    user.ID,
 	}
