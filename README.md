@@ -15,6 +15,9 @@ Multiple user regisration is supported and each user can view and follow other u
 - Create a .gatorconfig.json file in the home directory "~"
  
  ## Usage 
+ - run gator agg in a another terminal session to scrape feeds continously
+
+ ## Commands
  - gator register [username] - To register a user
  - gator login [username] - To login as a user
  - gator reset - To delete all users
