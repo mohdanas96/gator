@@ -6,19 +6,26 @@ Just tell gator which blog needs to be kept track of and chill.
 Multiple user regisration is supported and each user can view and follow other user's blogs as well.
 
 ## Requirements
----
 - Go toolchain
 - Postgresql
 
-## Usage
-> go get [github.com](https://github.com/mohdanas96/gator)
-
-Go to the root directory of where you imported the program
-
-> go install
-
-> create / update .gatorconfig.json created at the home directory "~", add you postgres url here : db_url="Your_URL"
-
-> 
+## Installation
+- git clone the repository to your local computer
+- Go to the root directory of the and run go install
+- Create a .gatorconfig.json file in the home directory "~"
+ 
+ ## Usage 
+ - gator register [username] - To register a user
+ - gator login [username] - To login as a user
+ - gator reset - To delete all users
+ - gator users - To list current and all users
+ - gator addfeed - [feed name][feed url] - To add a feed
+ - gator feeds - To list all available feeds
+ - gator follow [url] - To follow a specific feed
+ - gator following - To list all feeds current users is following
+ - gator unfollow [url] - To unfollow a feed
+ - gator browse [limit] - To browse all the feeds the current user is following. 'limit' can be specified for a specific amount of posts to browse
+ default is 2
+ 
 
 
